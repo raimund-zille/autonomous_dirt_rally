@@ -10,11 +10,20 @@ import os
 import numpy as np
 
 class MyController:
-    def __init__(self, controller_name):
+    def __init__(self, controller_name, file_path):
         self.controller_name = controller_name
         self.getController()
         self.collected_states = list()
         
+        self.file_path = file_path
+        dir_path = os.path.dirname(file_path)
+        # check if the dir exists
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        
+    def __str__(self):
+        return str(self.collected_states)
+                
     def getController(self):
         # search for correct controller
         pygame.init()
@@ -46,12 +55,8 @@ class MyController:
         my_controller_state["Valid"] = self.controller_found
         if(not self.controller_found):
             return my_controller_state
-            
-        
         
         pygame.event.pump() # otherwise get_axis always returns 0.0
-        
-        
         
         # Axis 0
         axis = self.controller.get_axis(0)
@@ -77,15 +82,15 @@ class MyController:
 
     def getAllStates(self):
         return self.collected_states
+    
+    def deleteLatestData(self, amount_to_delete):
+        if amount_to_delete > 0:
+            del self.collected_states[-amount_to_delete:]
 
     def clearAllStates(self):
         self.collected_states.clear()
         
-    def saveAllStatesAndClear(self, file_path):
-        dir_path = os.path.dirname(file_path)
-        # check if the dir exists
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
+    def saveDataAndClear(self):
         
-        np.save(file_path, self.getAllStates())
+        np.savetxt(self.file_path, self.getAllStates())
         self.clearAllStates()
