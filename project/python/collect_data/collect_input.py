@@ -6,11 +6,14 @@ Created on Sun Jan 21 16:51:13 2018
 """
 
 import pygame
+import os
+import numpy as np
 
 class MyController:
     def __init__(self, controller_name):
         self.controller_name = controller_name
         self.getController()
+        self.collected_states = list()
         
     def getController(self):
         # search for correct controller
@@ -36,12 +39,19 @@ class MyController:
         # Axis 0 -> steering
         # Axis 2 -> increase speed
         # Axis 3 -> decrease speed
+        
+        my_controller_state = {}
+        
+        # check if initialized
+        my_controller_state["Valid"] = self.controller_found
         if(not self.controller_found):
-            return {"Not Valid":0.0}
+            return my_controller_state
+            
+        
         
         pygame.event.pump() # otherwise get_axis always returns 0.0
         
-        my_controller_state = {}
+        
         
         # Axis 0
         axis = self.controller.get_axis(0)
@@ -59,7 +69,23 @@ class MyController:
         my_controller_state["decrease_speed"] = float(axis)
         
         return my_controller_state
+    
+    def collectState(self, corr_img_path):
+        current_state = self.getState()
+        current_state["img_path"] = corr_img_path
+        self.collected_states.append(current_state)
 
-class Ryan:
-    def status():
-        print("hahaha 2")
+    def getAllStates(self):
+        return self.collected_states
+
+    def clearAllStates(self):
+        self.collected_states.clear()
+        
+    def saveAllStatesAndClear(self, file_path):
+        dir_path = os.path.dirname(file_path)
+        # check if the dir exists
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        
+        np.save(file_path, self.getAllStates())
+        self.clearAllStates()

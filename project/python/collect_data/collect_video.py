@@ -5,16 +5,21 @@ Created on Sun Jan 21 16:51:13 2018
 @author: Raimund
 """
 
-import pyscreenshot as screen
+import pyautogui as screen
 import os
+import datetime
 
 class CollectVideo:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.num = 0
+        
+        if not os.path.exists(file_path):
+            # create folder
+            os.makedirs(file_path)
+
     
     def getScreen(self):
-        im = screen.grab()
+        im = screen.screenshot()
         return im
         
     def showScreen(self):
@@ -22,13 +27,12 @@ class CollectVideo:
         im.show()
         
     def saveScreen(self):
-        #im = self.getScreen()
-        my_image_name = "img_{}".format(self.num)
+        # save with usage of datetime
+        time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S.%f")
+        my_image_name = "img_{}{}".format(time, ".png")
         complete_path = os.path.join(self.file_path, my_image_name)
-        self.num += 1
         print(complete_path)
-        
-        im = screen.grab()
-        im.save(complete_path)
-        
+        im = screen.screenshot()
+        #im = screen.screenshot(complete_path)
+        return complete_path
         
