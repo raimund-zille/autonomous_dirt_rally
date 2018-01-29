@@ -7,7 +7,7 @@ Created on Sun Jan 21 16:51:13 2018
 
 import pygame
 import os
-import numpy as np
+import pandas as pd
 
 class MyController:
     def __init__(self, controller_name, file_path):
@@ -91,6 +91,6 @@ class MyController:
         self.collected_states.clear()
         
     def saveDataAndClear(self):
-        
-        np.savetxt(self.file_path, self.getAllStates())
+        df = pd.DataFrame(self.getAllStates())
+        df.to_csv(self.file_path)
         self.clearAllStates()

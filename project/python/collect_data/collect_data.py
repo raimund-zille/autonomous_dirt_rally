@@ -23,7 +23,7 @@ class CollectData:
         
         # create file_path for input_collector
         file_path = os.path.join(data_path, "data.csv")
-        self.input_collector = collect_input.MyController(controller_name, data_path)
+        self.input_collector = collect_input.MyController(controller_name, file_path)
         
     def __str__(self):
         return "Not implemented"
@@ -55,6 +55,7 @@ class CollectData:
         self.input_collector.deleteLatestData(amount_to_delete)
         
         # save data to folder
+        print("Saving data.")
         self.video_collector.saveDataAndClear()
         self.input_collector.saveDataAndClear();
         
@@ -65,12 +66,13 @@ class CollectData:
     def collectDataTillInterupted(self):
         # wrap infinite loop in try catch block so user can escape with ctrl+c
         try:
+            print("Collecting data! Ctrl-C to interrupted")
             while True:
                 # track time to achieve a stable 10 Hz rate
                 time_before = time.clock()
                 im_path = self.video_collector.collectScreen()
                 self.input_collector.collectState(im_path)
-                print("Collecting data! Ctrl-C to interrupted")
+                
                 time_diff = time.clock() - time_before
                 
                 # sleep diffrenz
@@ -91,7 +93,7 @@ data_path = os.path.abspath("test")
 #clock = collect_input.pygame.time.Clock()
 #
 ##while False:
-#    #clock.tick(1)
+#    #clock.tick(1)0
 #    #collect_video.screen.grab_to_file("test")
 #    #print("alive")
 #delta = collect_video.datetime.timedelta(0)
@@ -113,8 +115,9 @@ data_path = os.path.abspath("test")
 ## Load
 #test = collect_input.np.load(controller_file_path)
 #print(test)
+    
 
-collectData = CollectData(controller_name, data_path, 10)
+collectData = CollectData(controller_name, data_path, 100)
 collectData.collectData()
 print("success!!!")
 
